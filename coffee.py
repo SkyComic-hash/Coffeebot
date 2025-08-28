@@ -2,6 +2,7 @@ import logging
 import random
 import time
 import sqlite3
+import re
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
@@ -220,33 +221,33 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower().strip()
     
-    # Тільки точні збіги без зайвих пробілів
-    exact_commands = ['випити маккофе', 'выпить маккофе', 'маккофе', 'Випити маккофе', 'Выпить маккофе', 'Маккофе']
+    # ТОЧНЫЕ совпадения (регистронезависимые)
+    exact_commands = ['випити маккофе', 'выпить маккофе', 'маккофе']
     
     if text in exact_commands:
         await maccoffee(update, context)
-    # else: НІЧОГО НЕ РОБИМО - ігноруємо інші повідомлення
+    # Иначе игнорируем сообщение
 
 
 def main():
     init_db()
 
-    # Створюємо додаток
+    # Создаем приложение
     application = Application.builder().token(BOT_TOKEN).build()
 
-    # Додаємо обробники - ТІЛЬКИ КОМАНДИ
+    # Добавляем обработчики - ТОЛЬКО КОМАНДЫ
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("maccoffee", maccoffee))
     application.add_handler(CommandHandler("stats", stats))
     
-    # Обробник тексту ТІЛЬКИ для точних команд
+    # Обработчик текста ТОЛЬКО для точных команд (без учета регистра)
     application.add_handler(MessageHandler(
-        filters.Regex(r'^(випити маккофе|выпить маккофе|маккофе|Випити маккофе|Выпить маккофе|Маккофе)$'),
+        filters.TEXT & ~filters.COMMAND,
         handle_message
     ))
 
-    # Запускаємо бота
-    print("Бот запущений...")
+    # Запускаем бота
+    print("Бот запущен...")
     application.run_polling()
 
 
