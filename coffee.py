@@ -221,7 +221,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower().strip()
     
     # Тільки точні збіги без зайвих пробілів
-    exact_commands = ['випити маккофе', 'випити маккофе', 'выпить маккофе', 'маккофе']
+    exact_commands = ['випити маккофе', 'выпить маккофе', 'маккофе', 'Випити маккофе', 'Выпить маккофе', 'Маккофе']
     
     if text in exact_commands:
         await maccoffee(update, context)
@@ -241,7 +241,7 @@ def main():
     
     # Обробник тексту ТІЛЬКИ для точних команд
     application.add_handler(MessageHandler(
-        filters.Regex(r'^(випити маккофе|выпить маккофе|маккофе)$'),
+        filters.Regex(r'^(випити маккофе|выпить маккофе|маккофе|Випити маккофе|Выпить маккофе|Маккофе)$'),
         handle_message
     ))
 
@@ -252,4 +252,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
