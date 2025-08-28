@@ -1,4 +1,4 @@
-import logging
+ import logging
 import random
 import time
 import sqlite3
@@ -33,6 +33,7 @@ SPILL_MESSAGES = [
     "кофе решил сбежать"
 ]
 
+
 # Инициализация базы данных
 def init_db():
     conn = sqlite3.connect('maccoffee.db')
@@ -52,6 +53,7 @@ def init_db():
     conn.commit()
     conn.close()
 
+
 def get_user_info(user_id):
     conn = sqlite3.connect('maccoffee.db')
     cursor = conn.cursor()
@@ -61,6 +63,7 @@ def get_user_info(user_id):
 
     conn.close()
     return user
+
 
 def update_user_info(user_id, username, first_name, last_name, coffee_amount):
     conn = sqlite3.connect('maccoffee.db')
@@ -74,7 +77,7 @@ def update_user_info(user_id, username, first_name, last_name, coffee_amount):
     if user:
         new_total = user[4] + coffee_amount
         cursor.execute('''
-        UPDATE users
+        UPDATE users 
         SET username = ?, first_name = ?, last_name = ?, total_coffee = ?, last_drink_time = ?
         WHERE user_id = ?
         ''', (username, first_name, last_name, new_total, current_time, user_id))
@@ -87,6 +90,7 @@ def update_user_info(user_id, username, first_name, last_name, coffee_amount):
     conn.commit()
     conn.close()
     return new_total if user else coffee_amount
+
 
 def can_drink_coffee(user_id):
     conn = sqlite3.connect('maccoffee.db')
@@ -110,6 +114,7 @@ def can_drink_coffee(user_id):
         wait_time = 3600 - time_diff
         return False, wait_time
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     welcome_text = f"Привет, {user.first_name}! ☕\n\nЯ бот для отслеживания потребления маккофе!\n\n"
@@ -120,6 +125,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
     await update.message.reply_text(welcome_text, reply_markup=reply_markup)
+
 
 async def maccoffee(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -137,13 +143,13 @@ async def maccoffee(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_info = get_user_info(user_id)
         if user_info:
             total_coffee = user_info[4]
-            response_text += f"\n\nВыпито всего: {total_coffee:.1f} л. ☕"
+            response_text += f"\n\nВыпито всего: {total_coffee:.1f} л. 🍵"
 
         await update.message.reply_text(response_text)
         return
 
     # Определяем количество литров (1, 2 или 3)
-    coffee_liters = random.randint(1, 10)
+    coffee_liters = random.randint(1, 3)
     coffee_amount = float(coffee_liters)
 
     # 15% шанс пролить кофе
@@ -161,6 +167,7 @@ async def maccoffee(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message += f"\n\nВыпито всего: {new_total:.1f} л. ☕"
 
     await update.message.reply_text(message)
+
 
 async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -190,28 +197,30 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(response_text)
 
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower().strip()
-
-    # Только точные совпадения
+    
+    # Только точные совпадения без лишних пробелов
     exact_commands = ['випити маккофе', 'выпить маккофе', 'маккофе']
-
+    
     if text in exact_commands:
         await maccoffee(update, context)
-    # else: ничего не делаем - игнорируем другие сообщения
+    # else: НИЧЕГО НЕ ДЕЛАЕМ - игнорируем другие сообщения
+
 
 def main():
     init_db()
 
-    # Создаем application внутри функции
+    # Создаем приложение
     application = Application.builder().token(BOT_TOKEN).build()
 
-    # Добавляем обработчики
+    # Добавляем обработчики - ТОЛЬКО КОМАНДЫ
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("maccoffee", maccoffee))
     application.add_handler(CommandHandler("stats", stats))
-
-    # Только на конкретные текстовые команды
+    
+    # Обработчик текста ТОЛЬКО для точных команд
     application.add_handler(MessageHandler(
         filters.Regex(r'^(випити маккофе|выпить маккофе|маккофе)$'),
         handle_message
@@ -220,5 +229,8 @@ def main():
     # Запускаем бота
     print("Бот запущен...")
     application.run_polling()
+
+
 if __name__ == "__main__":
- main()
+    main()
+
