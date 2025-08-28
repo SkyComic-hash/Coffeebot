@@ -150,12 +150,12 @@ async def maccoffee(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # Визначаємо різні об'єми маккофе: 0.5, 1.0, 1.5, 2.0 літра
-    coffee_options = [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0]
+    coffee_options = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0]
     coffee_amount = random.choice(coffee_options)
 
     # 15% шанс пролить каву (від'ємне значення)
     if random.random() < 0.15:
-        spill_amount = random.choice([-0.5, -1.0, -1.5, -2.0, -2.5, -3.0, -3.5, 4.0])
+        spill_amount = random.choice([-0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1.0, -1.1, -1.5, -2.0, -2.5, -3.0, -3.5, 4.0])
         spill_message = random.choice(SPILL_MESSAGES)
         
         if spill_amount == -0.5:
@@ -253,5 +253,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
